@@ -8,7 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Company extends Transformable {
-
     private String id;
     private String name;
     private Address address;
