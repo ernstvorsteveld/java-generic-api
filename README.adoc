@@ -1,0 +1,12 @@
+= java-generic-api
+
+What do you do when your domain model of shared concepts differs from the domain model you want to integrate with?
+This tiny project shows a solution for this kind of situations. Using a configuration, a JsonPatch object is created with values from the external model. The patch is applied on our own model.
+
+Current functionality is very limited, because only string values are tested in a flat domain object. This will improve.
+
+List of things to do:
+
+- Add new domain models
+- Add more complex mapping
+- Add object change
