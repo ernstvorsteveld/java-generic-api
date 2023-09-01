@@ -82,9 +82,8 @@ public class CompanyTransformer implements Transformer<Company> {
 
     private Company patchCompany(Collection<AddOperation> operations) {
         try {
-            Company target = new Company();
-            JsonPatch patch = Mapper.MAPPER.readValue(Mapper.MAPPER.writeValueAsString(operations), JsonPatch.class);
-            JsonNode patched = patch.apply(Mapper.MAPPER.convertValue(target, JsonNode.class));
+            JsonPatch patch = Mapper.MAPPER.convertValue(operations, JsonPatch.class);
+            JsonNode patched = patch.apply(Mapper.MAPPER.createObjectNode());
             return Mapper.MAPPER.treeToValue(patched, Company.class);
         } catch (JsonProcessingException | JsonPatchException e) {
             throw new RuntimeException(e);
