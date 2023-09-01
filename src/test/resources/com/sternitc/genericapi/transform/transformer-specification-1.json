@@ -1,0 +1,30 @@
+{
+  "transformers": [
+    {
+      "id": "80a816ef-d31a-4c48-b575-252011fc999f",
+      "order": "10",
+      "fromPath": {
+        "path": "uuid",
+        "type": "String"
+      },
+      "toPath": {
+        "path": "id",
+        "type": "String"
+      },
+      "mandatory": true
+    },
+    {
+      "id": "80a816ef-d31a-4c48-b578-252011fc999f",
+      "order": "20",
+      "fromPath": {
+        "path": "companyName",
+        "type": "String"
+      },
+      "toPath": {
+        "path": "name",
+        "type": "String"
+      },
+      "mandatory": true
+    }
+  ]
+}
