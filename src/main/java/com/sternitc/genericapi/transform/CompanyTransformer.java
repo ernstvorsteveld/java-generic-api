@@ -23,55 +23,16 @@ public class CompanyTransformer implements Transformer<Company> {
     @Override
     public Company transformAdd(TransformerSpecification specification, byte[] source) {
         Collection<TransformPreparation> values = prepare(specification, source);
-
-        Collection<AddOperation> operations = values.stream().
-                map(t -> new AddOperation(
-                        JsonPointer.of(t.transformer.toPath().path()),
-                        Objects.requireNonNull(getNode(t)))).toList();
-
-        try {
-            Company target = new Company();
-            JsonPatch patch = Mapper.MAPPER.readValue(Mapper.MAPPER.writeValueAsString(operations), JsonPatch.class);
-            JsonNode patched = patch.apply(Mapper.MAPPER.convertValue(target, JsonNode.class));
-            return Mapper.MAPPER.treeToValue(patched, Company.class);
-        } catch (JsonProcessingException | JsonPatchException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private Collection<TransformPreparation> prepare(
-            TransformerSpecification specification,
-            byte[] bytes) {
-        Preparer preparer = new Preparer(bytes);
-        return specification.getTransformers().stream().map(preparer::prepare).toList();
-    }
-
-    private JsonNode getNode(TransformPreparation transformPreparation) {
-        if (transformPreparation.value == null) {
-            return null;
-        }
-
-        switch (transformPreparation.transformer.fromPath().type()) {
-            case String -> {
-                return new TextNode((String) transformPreparation.value);
-            }
-            case Number -> {
-                return new DecimalNode((BigDecimal) transformPreparation.value);
-            }
-            case Boolean -> {
-                if ((Boolean) transformPreparation.value) {
-                    return BooleanNode.getTrue();
-                } else {
-                    return BooleanNode.getFalse();
-                }
-            }
-            default -> {
-                throw new RuntimeException("Not yet implemented");
-            }
-        }
+        Collection<AddOperation> operations = values.stream().map(AddOperationBuilder::from).toList();
+        return patchCompany(operations);
     }
 
     private record TransformPreparation(AttributeTransformer transformer, Object value) {
+    }
+
+    private Collection<TransformPreparation> prepare(TransformerSpecification specification, byte[] bytes) {
+        Preparer preparer = new Preparer(bytes);
+        return specification.getTransformers().stream().map(preparer::prepare).toList();
     }
 
     private static class Preparer {
@@ -87,4 +48,47 @@ public class CompanyTransformer implements Transformer<Company> {
                     JsonPath.read(jsonString, transformer.fromPath().path()));
         }
     }
+
+    public static class AddOperationBuilder {
+        public static AddOperation from(TransformPreparation preparation) {
+            return new AddOperation(
+                    JsonPointer.of(preparation.transformer.toPath().path()),
+                    Objects.requireNonNull(getNode(preparation)));
+        }
+
+        private static JsonNode getNode(TransformPreparation transformPreparation) {
+            if (transformPreparation.value == null) {
+                return null;
+            }
+
+            switch (transformPreparation.transformer.fromPath().type()) {
+                case String -> {
+                    return new TextNode((String) transformPreparation.value);
+                }
+                case Number -> {
+                    return new DecimalNode((BigDecimal) transformPreparation.value);
+                }
+                case Boolean -> {
+                    if ((Boolean) transformPreparation.value) {
+                        return BooleanNode.getTrue();
+                    } else {
+                        return BooleanNode.getFalse();
+                    }
+                }
+                default -> throw new RuntimeException("Not yet implemented");
+            }
+        }
+    }
+
+    private Company patchCompany(Collection<AddOperation> operations) {
+        try {
+            Company target = new Company();
+            JsonPatch patch = Mapper.MAPPER.readValue(Mapper.MAPPER.writeValueAsString(operations), JsonPatch.class);
+            JsonNode patched = patch.apply(Mapper.MAPPER.convertValue(target, JsonNode.class));
+            return Mapper.MAPPER.treeToValue(patched, Company.class);
+        } catch (JsonProcessingException | JsonPatchException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
