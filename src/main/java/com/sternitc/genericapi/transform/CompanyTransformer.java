@@ -17,22 +17,22 @@ import com.sternitc.genericapi.transform.domain.TransformerSpecification;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class CompanyTransformer implements Transformer<Company> {
 
     @Override
     public Company transformAdd(TransformerSpecification specification, byte[] source) {
-        Collection<TransformPreparation> values = prepare(specification, source);
-        Collection<AddOperation> operations = values.stream().map(AddOperationBuilder::from).toList();
+        Preparer preparer = new Preparer(source);
+        Collection<AddOperation> operations =
+                specification.getTransformers().stream()
+                        .map(preparer::prepare)
+                        .map(AddOperationBuilder::from)
+                        .toList();
         return patchCompany(operations);
     }
 
     private record TransformPreparation(AttributeTransformer transformer, Object value) {
-    }
-
-    private Collection<TransformPreparation> prepare(TransformerSpecification specification, byte[] bytes) {
-        Preparer preparer = new Preparer(bytes);
-        return specification.getTransformers().stream().map(preparer::prepare).toList();
     }
 
     private static class Preparer {
