@@ -11,6 +11,9 @@
         "path": "id",
         "type": "String"
       },
+      "converter": {
+        "bean": "String2String"
+      },
       "mandatory": true
     },
     {
@@ -23,6 +26,9 @@
       "toPath": {
         "path": "name",
         "type": "String"
+      },
+      "converter": {
+        "bean": "String2String"
       },
       "mandatory": true
     }

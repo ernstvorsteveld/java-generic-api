@@ -1,0 +1,21 @@
+{
+  "model": "Company",
+  "transformers": [
+    {
+      "id": "d53a6e03-4dbb-46a6-a566-a3e05846371e",
+      "order": "10",
+      "fromPath": {
+        "path": "name",
+        "type": "String"
+      },
+      "toPath": {
+        "path": "name",
+        "type": "String"
+      },
+      "converter": {
+        "bean": "String2String"
+      },
+      "mandatory": true
+    }
+  ]
+}

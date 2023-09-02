@@ -10,5 +10,6 @@ import lombok.*;
 public class Company extends Transformable {
     private String id;
     private String name;
+    private String commercialName;
     private Address address;
 }

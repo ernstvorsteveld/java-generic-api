@@ -2,24 +2,27 @@ package com.sternitc.genericapi.transform;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.DecimalNode;
-import com.fasterxml.jackson.databind.node.TextNode;
+import com.fasterxml.jackson.databind.node.*;
 import com.github.fge.jackson.jsonpointer.JsonPointer;
 import com.github.fge.jsonpatch.AddOperation;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.github.fge.jsonpatch.JsonPatchException;
 import com.jayway.jsonpath.JsonPath;
 import com.sternitc.genericapi.domain.Company;
+import com.sternitc.genericapi.transform.converter.ValueConverter;
 import com.sternitc.genericapi.transform.domain.AttributeTransformer;
+import com.sternitc.genericapi.transform.domain.JsonTypes;
 import com.sternitc.genericapi.transform.domain.TransformerSpecification;
+import lombok.AllArgsConstructor;
 
-import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 
+@AllArgsConstructor
 public class CompanyTransformer implements Transformer<Company> {
+
+    private Map<ConverterBeanNames, ValueConverter> converters;
 
     @Override
     public Company transformAdd(TransformerSpecification specification, byte[] source) {
@@ -27,7 +30,7 @@ public class CompanyTransformer implements Transformer<Company> {
         Collection<AddOperation> operations =
                 specification.getTransformers().stream()
                         .map(preparer::prepare)
-                        .map(AddOperationBuilder::from)
+                        .map(p -> new AddOperationBuilder(converters).with(p).build())
                         .toList();
         return patchCompany(operations);
     }
@@ -50,26 +53,49 @@ public class CompanyTransformer implements Transformer<Company> {
     }
 
     public static class AddOperationBuilder {
-        public static AddOperation from(TransformPreparation preparation) {
-            return new AddOperation(
-                    JsonPointer.of(preparation.transformer.toPath().path()),
-                    Objects.requireNonNull(getNode(preparation)));
+        private final Map<ConverterBeanNames, ValueConverter> converters;
+        private TransformPreparation preparation;
+
+        public AddOperationBuilder(Map<ConverterBeanNames, ValueConverter> converters) {
+            this.converters = converters;
         }
 
-        private static JsonNode getNode(TransformPreparation transformPreparation) {
+        public AddOperationBuilder with(TransformPreparation preparation) {
+            this.preparation = preparation;
+            return this;
+        }
+
+        public AddOperation build() {
+            return new AddOperation(
+                    JsonPointer.of(preparation.transformer.toPath().path()),
+                    Objects.requireNonNull(getNode(preparation, converters)));
+        }
+
+        private static JsonNode getNode(
+                TransformPreparation transformPreparation,
+                Map<ConverterBeanNames, ValueConverter> converters) {
             if (transformPreparation.value == null) {
                 return null;
             }
 
-            switch (transformPreparation.transformer.fromPath().type()) {
+            ValueConverter converter = converters.get(transformPreparation.transformer.converter().bean());
+            var type = transformPreparation.transformer.fromPath().type();
+            var value = converter.convert(transformPreparation.value, JsonTypes.getClassName(type));
+            switch (type) {
                 case String -> {
-                    return new TextNode((String) transformPreparation.value);
+                    return new TextNode((String) value);
                 }
-                case Number -> {
-                    return new DecimalNode((BigDecimal) transformPreparation.value);
+                case Number_Integer -> {
+                    return new IntNode((Integer) value);
+                }
+                case Number_Double -> {
+                    return new DoubleNode((Double) value);
+                }
+                case Number_Float -> {
+                    return new FloatNode((Float) value);
                 }
                 case Boolean -> {
-                    if ((Boolean) transformPreparation.value) {
+                    if ((Boolean) value) {
                         return BooleanNode.getTrue();
                     } else {
                         return BooleanNode.getFalse();

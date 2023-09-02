@@ -31,6 +31,22 @@
         "bean": "String2String"
       },
       "mandatory": true
+    },
+    {
+      "id": "80a816e1-d31a-4c48-b578-252011fc999f",
+      "order": "30",
+      "fromPath": {
+        "path": "apiCompanyDetails.commercialName",
+        "type": "String"
+      },
+      "toPath": {
+        "path": "commercialName",
+        "type": "String"
+      },
+      "converter": {
+        "bean": "String2String"
+      },
+      "mandatory": true
     }
   ]
 }

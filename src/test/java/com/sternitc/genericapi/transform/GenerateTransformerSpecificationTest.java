@@ -1,12 +1,11 @@
 package com.sternitc.genericapi.transform;
 
 import com.sternitc.genericapi.domain.TreasurUpModels;
-import com.sternitc.genericapi.transform.domain.AttributeTransformer;
-import com.sternitc.genericapi.transform.domain.JsonTypes;
-import com.sternitc.genericapi.transform.domain.PathSpecification;
-import com.sternitc.genericapi.transform.domain.TransformerSpecification;
+import com.sternitc.genericapi.transform.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
@@ -25,22 +24,23 @@ public class GenerateTransformerSpecificationTest extends AbstractTest {
         specification.add(new AttributeTransformer(
                 UUID.randomUUID().toString(),
                 "10",
-                new PathSpecification("/name", JsonTypes.String),
-                new PathSpecification("/name", JsonTypes.String),
+                new PathSpecification("name", JsonTypes.String),
+                new PathSpecification("name", JsonTypes.String),
+                new ValueConverterSpecification(ConverterBeanNames.String2String),
                 true));
 
         log.info(specification.string());
     }
 
     @Test
-    public void should_wire_objectmapper() {
+    public void should_wire_objectMapper() {
         assertThat(mapper).isNotNull();
     }
 
-    @Test
-    public void should_read_json_file() {
-        TransformerSpecification specification = read(
-                "com/sternitc/genericapi/transform/transformer-specification-test.json", TransformerSpecification.class);
-        assertThat(specification.getTransformers().size()).isEqualTo(2);
+    @ParameterizedTest
+    @MethodSource("provideFiles")
+    public void should_read_json_files(String file, int length) {
+        TransformerSpecification specification = read(file, TransformerSpecification.class);
+        assertThat(specification.getTransformers().size()).isEqualTo(length);
     }
 }
