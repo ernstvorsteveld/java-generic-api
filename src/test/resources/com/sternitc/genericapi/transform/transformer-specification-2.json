@@ -73,7 +73,7 @@
         "type": "Boolean"
       },
       "toPath": {
-        "path": "legalEntity.valid",
+        "path": "legalEntity/valid",
         "type": "Boolean"
       },
       "converter": {

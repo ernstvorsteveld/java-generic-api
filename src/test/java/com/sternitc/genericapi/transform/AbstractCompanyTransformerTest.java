@@ -70,7 +70,7 @@ public abstract class AbstractCompanyTransformerTest extends AbstractTest {
                 .commercialName(COMMERCIAL_NAME)
                 .numberOfEmployees(EMPLOYEE_COUNT)
                 .legalEntity(LegalEntity.builder()
-                        .valid(false)
+                        .valid(true)
                         .build())
                 .build();
     }
@@ -82,7 +82,7 @@ public abstract class AbstractCompanyTransformerTest extends AbstractTest {
                 .apiCompanyDetails(APICompanyDetails.builder()
                         .commercialName(COMMERCIAL_NAME)
                         .employeeCount(EMPLOYEE_COUNT)
-                        .accepted(false)
+                        .accepted(true)
                         .build()
                 )
                 .build();
