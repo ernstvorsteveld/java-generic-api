@@ -1,6 +1,6 @@
 package com.sternitc.genericapi.transform;
 
-import com.sternitc.genericapi.domain.TreasurUpModels;
+import com.sternitc.genericapi.domain.Models;
 import com.sternitc.genericapi.transform.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ public class GenerateTransformerSpecificationTest extends AbstractTest {
 
     @Test
     public void should_generate_transformer_specification() {
-        TransformerSpecification specification = new TransformerSpecification(TreasurUpModels.Company);
+        TransformerSpecification specification = new TransformerSpecification(Models.Company);
         specification.add(new AttributeTransformer(
                 UUID.randomUUID().toString(),
                 "10",

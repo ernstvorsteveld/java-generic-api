@@ -11,5 +11,7 @@ public class Company extends Transformable {
     private String id;
     private String name;
     private String commercialName;
+    private int numberOfEmployees;
+    private LegalEntity legalEntity = new LegalEntity();
     private Address address;
 }

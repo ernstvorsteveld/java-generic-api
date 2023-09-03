@@ -1,4 +1,5 @@
 {
+  "model" : "Company",
   "transformers": [
     {
       "id": "80a816ef-d31a-4c48-b575-252011fc999f",
@@ -45,6 +46,38 @@
       },
       "converter": {
         "bean": "String2String"
+      },
+      "mandatory": true
+    },
+    {
+      "id": "81a816e1-d31a-4c48-b578-252011fc999f",
+      "order": "40",
+      "fromPath": {
+        "path": "apiCompanyDetails.employeeCount",
+        "type": "Number_Integer"
+      },
+      "toPath": {
+        "path": "numberOfEmployees",
+        "type": "Number_Integer"
+      },
+      "converter": {
+        "bean": "Integer2Integer"
+      },
+      "mandatory": true
+    },
+    {
+      "id": "82a816e1-d31a-4c48-b578-252011fc999f",
+      "order": "50",
+      "fromPath": {
+        "path": "apiCompanyDetails.accepted",
+        "type": "Boolean"
+      },
+      "toPath": {
+        "path": "legalEntity.valid",
+        "type": "Boolean"
+      },
+      "converter": {
+        "bean": "Boolean2Boolean"
       },
       "mandatory": true
     }

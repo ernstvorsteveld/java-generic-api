@@ -1,5 +1,5 @@
 package com.sternitc.genericapi.domain;
 
-public enum TreasurUpModels {
+public enum Models {
     Company
 }

@@ -31,5 +31,7 @@ class CompanyTransformerTest extends AbstractCompanyTransformerTest {
         assertThat(result.getName()).isEqualTo(expected.getName());
         assertThat(result.getId()).isEqualTo(expected.getId());
         assertThat(result.getCommercialName()).isEqualTo(expected.getCommercialName());
+        assertThat(result.getNumberOfEmployees()).isEqualTo(expected.getNumberOfEmployees());
+        assertThat(result.getLegalEntity().isValid()).isEqualTo(expected.getLegalEntity().isValid());
     }
 }

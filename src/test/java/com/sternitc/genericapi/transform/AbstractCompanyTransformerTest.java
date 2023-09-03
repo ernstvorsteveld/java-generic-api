@@ -2,6 +2,7 @@ package com.sternitc.genericapi.transform;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sternitc.genericapi.domain.Company;
+import com.sternitc.genericapi.domain.LegalEntity;
 import com.sternitc.genericapi.transform.domain.TransformerSpecification;
 import lombok.Builder;
 import lombok.Data;
@@ -55,6 +56,7 @@ public abstract class AbstractCompanyTransformerTest extends AbstractTest {
     static class APICompanyDetails {
         private int employeeCount;
         private String commercialName;
+        private boolean accepted;
     }
 
     TransformerSpecification getTransformerSpec(TransformerFiles file) {
@@ -66,6 +68,10 @@ public abstract class AbstractCompanyTransformerTest extends AbstractTest {
                 .id(TEST_UUID)
                 .name(TEST_NAME)
                 .commercialName(COMMERCIAL_NAME)
+                .numberOfEmployees(EMPLOYEE_COUNT)
+                .legalEntity(LegalEntity.builder()
+                        .valid(false)
+                        .build())
                 .build();
     }
 
@@ -75,7 +81,9 @@ public abstract class AbstractCompanyTransformerTest extends AbstractTest {
                 .uuid(TEST_UUID)
                 .apiCompanyDetails(APICompanyDetails.builder()
                         .commercialName(COMMERCIAL_NAME)
-                        .employeeCount(EMPLOYEE_COUNT).build()
+                        .employeeCount(EMPLOYEE_COUNT)
+                        .accepted(false)
+                        .build()
                 )
                 .build();
         return mapper.writeValueAsBytes(result);
